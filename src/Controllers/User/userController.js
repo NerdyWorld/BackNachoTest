@@ -372,7 +372,7 @@ userController.getUser = async(userId) =>{
       return {msg: "User not found"}
     }
 
-    return {msg: "User found", data: getUser};
+    return {msg: "User found", data: {...getUser, cart: getUser.cart ? getUser.cart : []}};
 
   }catch(error){
     console.log(error);
