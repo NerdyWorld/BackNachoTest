@@ -154,8 +154,7 @@ userHandler.contactPreferenceHandler = async(req, res) =>{
 };
 
 userHandler.emptyCartHandler = async(req, res) =>{
-console.log(req.body);
-  const response = await userController.emptyCart(req.body);
+  const response = await userController.emptyCart(req.body.userId);
 
     res.status(200).json(response);
   

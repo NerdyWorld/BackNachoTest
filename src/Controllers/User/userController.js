@@ -572,7 +572,7 @@ userController.forgotPassword = async(userEmail) =>{
               <h3>Forgot your password?</h3>
               <p class="p1">Don't worry, we got you! Just click the button below to reset your password.</p>
               <div class="a">
-                <a href="https://rivelle.netlify.app/reset-password/${getToken}">RESET YOUR PASSWORD</a>
+                <a href="https://madeinheaven-mgf.netlify.app/reset-password/${getToken}">RESET YOUR PASSWORD</a>
               </div>
               </div>
           </div>
@@ -583,8 +583,8 @@ userController.forgotPassword = async(userEmail) =>{
           </div>
           <div class="bottom">
             <p>Problems or questions? Please call us at <a class="href1" href="tel:+5493813003200">+54 9 3813003200</a></p>
-            <p>or email us at <a class="href2" href="mailto:rivellecompany@gmail.com">rivellecompany@gmail.com</a></p>
-            <p class="p2">3003 Fashionapolis Street, Rivelandia, TK 3333</p>
+            <p>or email us at <a class="href2" href="mailto:madeinheaven@gmail.com">madeinheaven@gmail.com</a></p>
+            <p class="p2">3003 Exclusive Col Street, Heaven Club, TK 3333</p>
           </div>
         </div>
       </div>
@@ -593,7 +593,7 @@ userController.forgotPassword = async(userEmail) =>{
 
     let data = {
       to: findUser.email,
-      subject: `Rivélle Support`,
+      subject: `MIH Support`,
       html: HTML,
       type: "forgotPassword"
     };
@@ -673,7 +673,9 @@ userController.cartToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let cart = findUser.cart || [];
+  let cart = typeof findUser.cart === "string" ? findUser.cart === "[]" ? [] : !findUser.cart ? [] : (typeof findUser.cart === "string" && findUser.cart !== "[]") ? JSON.parse(findUser.cart) : findUser.cart : findUser.cart;
+
+  console.log("CART", cart);
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
@@ -682,7 +684,7 @@ userController.cartToggle = async(item, userId) =>{
       cart
     });
     await findUser.save();
-    return {msg: "Item added to cart", data: findUser};
+    return {msg: "Item added to cart", data: findUser, product: item.id};
 
   }else if(cart.length){
     // Si hay items en favoritos, valida si el item ya existe
@@ -697,7 +699,7 @@ userController.cartToggle = async(item, userId) =>{
         cart
       });
       await findUser.save();
-      return {msg: "Item removed from cart", data: findUser};
+      return {msg: "Item removed from cart", data: findUser, product: item.id};
     }else if(!findItem){
       // Si el item no existe lo agrega
       cart.push(item);
@@ -1033,21 +1035,22 @@ userController.contactPreference = async(data) =>{
 
 userController.emptyCart = async(userId) =>{
   try{
-    console.log(userId);
 
     const findUser = await Users.findOne({
       where: {
         id: userId
       }
     });
-
+    
     if(!findUser){
       return {msg: "User not found"};
     };
 
-    findUser.cart = [];
+    await findUser.update({
+      cart: "[]"
+    });
 
-    await findUser.save({fields: ['cart']});
+    await findUser.save();
 
 
     return {msg: "Empty cart", data: findUser.dataValues};

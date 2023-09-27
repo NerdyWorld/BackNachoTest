@@ -13,18 +13,25 @@ mercadopago.configure({
 
 mercadoPagoRouter.post("/create_preference", (req, res) => {
   let getItems = req.body.items;
+  let user = req.body.user;
+
+
 
   
   let preference = {
     items: getItems,
+    payer: {
+      "name": user.id,
+    },
 
     // Back URLs will redirect the user after the payment process.
     back_urls: {
-      success: "http://localhost:3000/home",
-      failure: "http://localhost:3000/home",
-      pending: "http://localhost:3000/home",
+      success: "http://localhost:3000/account/orders",
+      failure: "http://localhost:3000/account/orders?message=mpFail",
+      pending: "http://localhost:3000/account/orders?message=mpPending",
     },
     auto_return: "approved",
+    binary_mode: true
   };
 
 
