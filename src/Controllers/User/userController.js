@@ -678,7 +678,7 @@ userController.cartToggle = async(item, userId) =>{
 
   let cart = !findUser.dataValues.cart ? [] : findUser.dataValues.cart ? typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart : findUser.dataValues.cart
 
-  console.log("CART", cart, findUser.dataValues.id);
+  
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
