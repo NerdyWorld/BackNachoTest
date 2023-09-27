@@ -161,7 +161,7 @@ userController.googleAuth = async(user) =>{
       const encodedUserId = generateToken(createUser.dataValues.id);
       console.log(createUser.dataValues);
 
-      return {msg: "Google user created", data: {...createUser.dataValues, encodedId: encodedUserId}};
+      return {msg: "Google user created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: createUser.dataValues.cart ? createUser.dataValues.cart : []}};
     }
 
   }catch(error){
