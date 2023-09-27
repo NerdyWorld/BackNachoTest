@@ -84,10 +84,10 @@ userController.loginUser = async(user) =>{
 
     if(findUserByEmail || findUserByUsername){
       const userFound = findUserByEmail ? findUserByEmail : findUserByUsername;
-      if(userFound.googleUser){
+      if(userFound.dataValues.googleUser){
         return {msg: "This email is associated with a Google account, please try logging in with Google"}
       };
-      if(userFound.githubUser){
+      if(userFound.dataValues.githubUser){
         return {msg: "This email is associated with a GitHub account, please try logging in with GitHub"}
       }
 
