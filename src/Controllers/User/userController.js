@@ -299,7 +299,7 @@ userController.updateUser = async(data, userId) =>{
 
     const getAllUsers = await Users.findAll();
 
-    return {msg: "User updated", data: findUser, allData: getAllUsers};
+    return {msg: "User updated", data: {...findUser.dataValues, cart: findUser.dataValues.cart ? findUser.dataValues.cart : []}, allData: getAllUsers,};
 
   }catch(error){
     console.log(error);
