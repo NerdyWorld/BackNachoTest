@@ -622,7 +622,7 @@ userController.favToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let favorites = findUser.favorites || [];
+  let favorites = findUser.dataValues.favorites || [];
 
   if(!favorites.length){
     // Si no hay nada en favoritos, agrega directo
@@ -631,7 +631,7 @@ userController.favToggle = async(item, userId) =>{
       favorites
     });
     await findUser.save();
-    return {msg: "Item added to favs", data: findUser};
+    return {msg: "Item added to favs", data: {...findUser.dataValues, cart: findUser.dataValues.cart ? findUser.dataValues.cart : []}};
 
   }else if(favorites.length){
     // Si hay items en favoritos, valida si el item ya existe
@@ -646,7 +646,7 @@ userController.favToggle = async(item, userId) =>{
         favorites
       });
       await findUser.save();
-      return {msg: "Item removed from favs", data: findUser};
+      return {msg: "Item removed from favs", data: {...findUser.dataValues, cart: findUser.dataValues.cart ? findUser.dataValues.cart : []}};
     }else if(!findItem){
       // Si el item no existe lo agrega
       favorites.push(item);
@@ -654,7 +654,7 @@ userController.favToggle = async(item, userId) =>{
         favorites
       });
       await findUser.save();
-      return {msg: "Item added to favs", data: findUser};
+      return {msg: "Item added to favs", data: {...findUser.dataValues, cart: findUser.dataValues.cart ? findUser.dataValues.cart : []}};
     }
   };
 
@@ -676,7 +676,7 @@ userController.cartToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let cart = typeof findUser.cart === "string" ? findUser.cart === "[]" ? [] : !findUser.cart ? [] : (typeof findUser.cart === "string" && findUser.cart !== "[]") ? JSON.parse(findUser.cart) : findUser.cart : findUser.cart;
+  let cart = typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : !findUser.dataValues.cart ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart;
 
   console.log("CART", cart);
 
