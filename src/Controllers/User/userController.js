@@ -119,6 +119,9 @@ userController.googleAuth = async(user) =>{
       }
     });
 
+
+    
+
     // ACCOUNT ALREADY ASSOCIATED WITH GOOGLE EMAIL
     if(userExist && !userExist.googleUser){
       return {msg: "Account already associated with Google Email"};
@@ -136,7 +139,7 @@ userController.googleAuth = async(user) =>{
       await userExist.save();
       console.log(userExist);
 
-      return {msg: "Google user logged", data: {...userExist.dataValues, encodedId: encodedUserId}}
+      return {msg: "Google user logged", data: {...userExist.dataValues, encodedId: encodedUserId, cart: !userExist.dataValues.cart ? [] : userExist.dataValues.cart}}
     }
 
     // REGISTER USER
