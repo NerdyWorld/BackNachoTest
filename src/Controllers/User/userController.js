@@ -622,7 +622,7 @@ userController.favToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let favorites = findUser.dataValues.favorites || [];
+  let favorites = typeof findUser.dataValues.favorites === "string" ? findUser.dataValues.favorites === "[]" ? [] : !findUser.dataValues.favorites ? [] : (typeof findUser.dataValues.favorites === "string" && findUser.dataValues.favorites !== "[]") ? JSON.parse(findUser.dataValues.favorites) : findUser.dataValues.favorites : findUser.dataValues.favorites;
 
   if(!favorites.length){
     // Si no hay nada en favoritos, agrega directo
