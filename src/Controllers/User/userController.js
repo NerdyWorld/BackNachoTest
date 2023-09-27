@@ -49,7 +49,7 @@ userController.createUser = async(user) =>{
 
     const createUser = await Users.create({...user, password: hashedPassword});
     const encodedUserId = generateToken(createUser.dataValues.id);
-    return {msg: "User created", data: {...createUser.dataValues, encodedId: encodedUserId}};
+    return {msg: "User created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: []}};
 
   }catch(error){
     console.log(error);
