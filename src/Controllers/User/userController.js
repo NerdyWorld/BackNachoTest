@@ -678,7 +678,7 @@ userController.cartToggle = async(item, userId) =>{
 
   let cart = typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : !findUser.dataValues.cart ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart;
 
-  console.log("CART", cart);
+  console.log("CART", cart, findUser.dataValues.id);
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
@@ -687,7 +687,7 @@ userController.cartToggle = async(item, userId) =>{
       cart
     });
     await findUser.save();
-    return {msg: "Item added to cart", data: findUser, product: item.id};
+    return {msg: "Item added to cart", data: findUser.dataValues, product: item.id};
 
   }else if(cart.length){
     // Si hay items en favoritos, valida si el item ya existe
@@ -702,7 +702,7 @@ userController.cartToggle = async(item, userId) =>{
         cart
       });
       await findUser.save();
-      return {msg: "Item removed from cart", data: findUser, product: item.id};
+      return {msg: "Item removed from cart", data: findUser.dataValues, product: item.id};
     }else if(!findItem){
       // Si el item no existe lo agrega
       cart.push(item);
@@ -710,7 +710,7 @@ userController.cartToggle = async(item, userId) =>{
         cart
       });
       await findUser.save();
-      return {msg: "Item added to cart", data: findUser};
+      return {msg: "Item added to cart", data: findUser.dataValues};
     }
   };
 
