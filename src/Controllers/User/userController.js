@@ -123,12 +123,12 @@ userController.googleAuth = async(user) =>{
     
 
     // ACCOUNT ALREADY ASSOCIATED WITH GOOGLE EMAIL
-    if(userExist && !userExist.googleUser){
+    if(userExist && !userExist.dataValues.googleUser){
       return {msg: "Account already associated with Google Email"};
     };
 
      // LOG USER
-     if(userExist && userExist.googleUser){
+     if(userExist && userExist.dataValues.googleUser){
 
       const encodedUserId = generateToken(userExist.dataValues.id);
 
@@ -219,7 +219,7 @@ userController.githubAuth = async(gitCode) =>{
       await userRegistered.save();
 
 
-      return {msg: "Github user logged", data: {...userRegistered, encodedId: encodedUserId}}
+      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart ? userRegistered.dataValues.cart : []}}
     };
 
     // Not registered, so we register the user.
@@ -240,7 +240,7 @@ userController.githubAuth = async(gitCode) =>{
 
     const encodedUserId = generateToken(createUser.dataValues.id);
     
-    return {msg: "Github user created", data: {...createUser.dataValues, encodedId: encodedUserId}}
+    return {msg: "Github user created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart ? userRegistered.dataValues.cart : []}}
     
 
   }catch(error){
@@ -372,7 +372,7 @@ userController.getUser = async(userId) =>{
       return {msg: "User not found"}
     }
 
-    return {msg: "User found", data: {...getUser, cart: getUser.cart ? getUser.cart : []}};
+    return {msg: "User found", data: {...getUser.dataValues, cart: getUser.cart ? getUser.cart : []}};
 
   }catch(error){
     console.log(error);
