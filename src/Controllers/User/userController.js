@@ -5,6 +5,7 @@ const generateToken = require("../../Utils/jwtEncode");
 const axios = require("axios");
 const uniqid = require('uniqid'); 
 const bcrypt = require('bcrypt');
+const { Op } = require("sequelize");
 
 
 
@@ -43,13 +44,12 @@ userController.createUser = async(user) =>{
     }
 
     // CREATE THE USER
-    const hashedPassword = bcrypt.hash(user.password, 10, (err, hash)=>{
-      user.password = hash;
-    });
+    
+    const hashedPassword = bcrypt.hashSync(user.password, 10);
 
-    const createUser = await Users.create(user);
-
-    return {msg: "User created", data: createUser.dataValues};
+    const createUser = await Users.create({...user, password: hashedPassword});
+    const encodedUserId = generateToken(createUser.dataValues.id);
+    return {msg: "User created", data: {...createUser.dataValues, encodedId: encodedUserId}};
 
   }catch(error){
     console.log(error);
@@ -84,18 +84,18 @@ userController.loginUser = async(user) =>{
 
     if(findUserByEmail || findUserByUsername){
       const userFound = findUserByEmail ? findUserByEmail : findUserByUsername;
-      if(userFound.googleUser){
+      if(userFound.dataValues.googleUser){
         return {msg: "This email is associated with a Google account, please try logging in with Google"}
       };
-      if(userFound.githubUser){
+      if(userFound.dataValues.githubUser){
         return {msg: "This email is associated with a GitHub account, please try logging in with GitHub"}
       }
 
       // If is not associated with a Google or Github account
-      const match = await bcrypt.compare(password, userFound.dataValues.password);
+      const match = bcrypt.compareSync(password, userFound.dataValues.password);
       if(match) {
         // Logged succesfully
-        const encodedUserId = generateToken(userExist.dataValues.id);
+        const encodedUserId = generateToken(userFound.dataValues.id);
         return {msg: "User logged", data: {...userFound.dataValues, encodedId: encodedUserId}}
       }else{
         // Wrong Password
@@ -150,7 +150,9 @@ userController.googleAuth = async(user) =>{
         avatar: "/images/googleLogo.svg",
         googleUser: true,
         logged: true,
-        verified: true
+        verified: true,
+        genre: "Not specified",
+        birthday: "000"
       });
 
       const encodedUserId = generateToken(createUser.dataValues.id);
@@ -192,7 +194,7 @@ userController.githubAuth = async(gitCode) =>{
       }
     });
 
-
+    
     // LOGIN OR REGISTER
 
     const userRegistered = await Users.findOne({
@@ -228,7 +230,9 @@ userController.githubAuth = async(gitCode) =>{
       firstName: "-github",
       lastName: "-github",
       logged: true,
-      verified: true
+      verified: true,
+      genre: "Not specified",
+      birthday: "000"
     });
 
     const encodedUserId = generateToken(createUser.dataValues.id);
@@ -241,8 +245,10 @@ userController.githubAuth = async(gitCode) =>{
   }
 };
 
-userController.updateUser = async(newUser, userId) =>{
+userController.updateUser = async(data, userId) =>{
   // return console.log(newUser);
+  const { newUser, oldPassword } = data;
+
   try{
     const findUser = await Users.findOne({
       where:{
@@ -254,11 +260,35 @@ userController.updateUser = async(newUser, userId) =>{
       return {msg: "No user found"}
     };
 
-    if(newUser.password){
-      bcrypt.hash(newUser.password, 10, (err, hash)=> {
-        newUser.password = hash;
+    // VALIDATE USERNAME
+    if(newUser.userName){
+      const validateUsername = await Users.findOne({
+        where: {
+          userName: newUser.userName,
+          id: {
+            [Op.ne]: userId
+          }
+        }
       });
+
+      if(validateUsername){
+        return {msg: "Username already in use"};
+      };
     };
+
+    if(newUser.password){
+      if(oldPassword){
+        const oldPasswordMatchNew = bcrypt.compareSync(oldPassword, findUser.password);
+        if(!oldPasswordMatchNew){
+          return {msg: "Old password incorrect"};
+        };
+      };
+
+      const hashedPassword = bcrypt.hashSync(newUser.password, 10);
+      newUser.password = hashedPassword;
+    };
+
+    
 
     await findUser.update(newUser);
 
@@ -542,7 +572,7 @@ userController.forgotPassword = async(userEmail) =>{
               <h3>Forgot your password?</h3>
               <p class="p1">Don't worry, we got you! Just click the button below to reset your password.</p>
               <div class="a">
-                <a href="http://localhost:3000/reset-password/${getToken}">RESET YOUR PASSWORD</a>
+                <a href="https://madeinheaven-mgf.netlify.app/reset-password/${getToken}">RESET YOUR PASSWORD</a>
               </div>
               </div>
           </div>
@@ -553,8 +583,8 @@ userController.forgotPassword = async(userEmail) =>{
           </div>
           <div class="bottom">
             <p>Problems or questions? Please call us at <a class="href1" href="tel:+5493813003200">+54 9 3813003200</a></p>
-            <p>or email us at <a class="href2" href="mailto:rivellecompany@gmail.com">rivellecompany@gmail.com</a></p>
-            <p class="p2">3003 Fashionapolis Street, Rivelandia, TK 3333</p>
+            <p>or email us at <a class="href2" href="mailto:madeinheaven@gmail.com">madeinheaven@gmail.com</a></p>
+            <p class="p2">3003 Exclusive Col Street, Heaven Club, TK 3333</p>
           </div>
         </div>
       </div>
@@ -563,9 +593,9 @@ userController.forgotPassword = async(userEmail) =>{
 
     let data = {
       to: findUser.email,
-      subject: `Rivélle Support`,
+      subject: `MIH Support`,
       html: HTML,
-      type: "forgotPasword"
+      type: "forgotPassword"
     };
 
     sendMail(data);
@@ -643,7 +673,9 @@ userController.cartToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let cart = findUser.cart || [];
+  let cart = typeof findUser.cart === "string" ? findUser.cart === "[]" ? [] : !findUser.cart ? [] : (typeof findUser.cart === "string" && findUser.cart !== "[]") ? JSON.parse(findUser.cart) : findUser.cart : findUser.cart;
+
+  console.log("CART", cart);
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
@@ -652,7 +684,7 @@ userController.cartToggle = async(item, userId) =>{
       cart
     });
     await findUser.save();
-    return {msg: "Item added to cart", data: findUser};
+    return {msg: "Item added to cart", data: findUser, product: item.id};
 
   }else if(cart.length){
     // Si hay items en favoritos, valida si el item ya existe
@@ -667,7 +699,7 @@ userController.cartToggle = async(item, userId) =>{
         cart
       });
       await findUser.save();
-      return {msg: "Item removed from cart", data: findUser};
+      return {msg: "Item removed from cart", data: findUser, product: item.id};
     }else if(!findItem){
       // Si el item no existe lo agrega
       cart.push(item);
@@ -855,9 +887,9 @@ userController.sendActivationCode = async(data) =>{
             <h2>Rivélle Company</h2>
             <div class="header-bottom">
               <a href="https://rivelle.netlify.app/home">Home</a>
-              <a href="https://rivelle.netlify.app/store">Store</a>
+              <a href="https://rivelle.netlify.app/ourStore">Store</a>
               <a href="https://rivelle.netlify.app/collections/gucci">Gucci</a>
-              <a href="https://rivelle.netlify.app/collections/louisVuitton">LV</a>
+              <a href="https://rivelle.netlify.app/collections/louisvuitton">LV</a>
               <a href="https://rivelle.netlify.app/collections/jimmyChoo" class="noBorder">Jimmy Choo</a>
             </div>
           </div>
@@ -953,6 +985,77 @@ userController.validateCredentials = async(data) =>{
 
     return {msg: "Credentials available"};
 
+  }catch(error){
+    console.log(error);
+  }
+};
+
+userController.contactPreference = async(data) =>{
+  try{
+    const { contactPreference, userId } = data;
+
+    const findUser = await Users.findOne({
+      where: {
+        id: userId
+      }
+    });
+
+    if(!findUser){
+      return {msg: "User not found"};
+    };
+
+    const userPreferences = findUser.dataValues.contactPreferences;
+    const findPreference = userPreferences.find(el => el === contactPreference);
+
+    if(findPreference){
+      await findUser.update({
+        contactPreferences: userPreferences.filter(el => el !== contactPreference)
+      })
+
+      await findUser.save();
+    }else{
+      await findUser.update({
+        contactPreferences: [...userPreferences, contactPreference]
+      });
+      
+      await findUser.save();
+    };
+
+    if(typeof findUser.dataValues.favorites === "string"){
+      findUser.dataValues.favorites = JSON.parse(findUser.dataValues.favorites);
+    }
+    return {msg: "Preferences updated", data: findUser.dataValues};
+
+   
+  }catch(error){
+    console.log(error);
+  }
+};
+
+
+userController.emptyCart = async(userId) =>{
+  try{
+
+    const findUser = await Users.findOne({
+      where: {
+        id: userId
+      }
+    });
+    
+    if(!findUser){
+      return {msg: "User not found"};
+    };
+
+    await findUser.update({
+      cart: "[]"
+    });
+
+    await findUser.save();
+
+
+    return {msg: "Empty cart", data: findUser.dataValues};
+
+   
   }catch(error){
     console.log(error);
   }

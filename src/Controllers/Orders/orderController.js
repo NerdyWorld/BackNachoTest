@@ -7,7 +7,7 @@ ordersController.createOrder = async(order) =>{
   try{
     const createOrder = await Orders.create(order);
 
-    return {msg: "Order created", data: createOrder.dataValues}
+    return {msg:"Order created", data: createOrder.dataValues}
 
   }catch(error){
     console.log(error);

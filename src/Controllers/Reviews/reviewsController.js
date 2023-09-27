@@ -20,7 +20,7 @@ reviewsController.createReview = async(review) =>{
     // We validate if the user already gave a review for the product, only one per user is allowed.
     const reviewExist = await Reviews.findOne({
       where:{
-        belongsTo: review.belongsTo,
+        userId: review.userId,
         productId: review.productId
       }
     });

@@ -21,6 +21,8 @@ userRouter.put("/fav-toggle/:userId", userHandler.favToggleHandler)
 userRouter.put("/cart-toggle/:userId", userHandler.cartToggleHandler)
 userRouter.post("/activationCode", userHandler.sendActivationCodeHandler)
 userRouter.post("/validateCredentials", userHandler.validateCredentialsHandler)
+userRouter.post("/contactPreferences", userHandler.contactPreferenceHandler)
+userRouter.post("/empty-cart", userHandler.emptyCartHandler)
 
 
 module.exports = userRouter;

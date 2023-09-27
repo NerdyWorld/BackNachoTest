@@ -31,7 +31,7 @@ productController.getAllProducts = async() =>{
 
     const getProducts = await Products.findAll();
 
-
+    
     return {data: getProducts};
   }catch(error){
     console.log(error);
@@ -143,7 +143,7 @@ productController.fetchProductsToDb = async() =>{
 productController.filterProducts = async(fields) =>{
 
   const { brand, category, color, priceMin, priceMax } = fields;
-
+  console.log(brand);
   try{
     let filteredProducts = [];
 
@@ -156,7 +156,7 @@ productController.filterProducts = async(fields) =>{
         }
       });
       if(!filter.length){
-        return {msg: "No products found"};
+        return {msg: "No products found", data: []};
       }else{
         filteredProducts = filter;
       };
@@ -166,7 +166,7 @@ productController.filterProducts = async(fields) =>{
         const filter = filteredProducts.filter(el => el.colors.includes(color));
 
         if(!filter.length){
-          return {msg: "No products found"};
+          return {msg: "No products found", data: []};
         }else{
           filteredProducts = filter;
         };
@@ -179,7 +179,7 @@ productController.filterProducts = async(fields) =>{
           }
         });
         if(!filter.length){
-          return {msg: "No products found"};
+          return {msg: "No products found", data: []};
         }else{
           filteredProducts = filter;
         };
@@ -190,29 +190,30 @@ productController.filterProducts = async(fields) =>{
         const filter = filteredProducts.filter(el => Number(el.price) > priceMin && Number(el.price) < priceMax);
 
         if(!filter.length){
-          return {msg: "No products found"};
+          return {msg: "No products found", data: []};
         }else{
           filteredProducts = filter;
         };
       }else{
-        const filter = await Products.findAll({
-          where: {
-            colors: {
-              [Op.contains]: [color]
-            }
-          }
-        });
+        const findAll = await Products.findAll();
+        
+        const filter = findAll.filter(el => Number(el.price) > priceMin && Number(el.price) < priceMax);
+
         if(!filter.length){
-          return {msg: "No products found"};
+          return {msg: "No products found", data: []};
         }else{
           filteredProducts = filter;
-        };
+        }
       }
     };
 
-    const filterByBrand = filteredProducts.filter(el => el.brand === brand);
-    if(!filterByBrand.length){
-      return {msg: "No products found"};
+    if(brand){
+      const filterByBrand = filteredProducts.filter(el => el.brand === brand);
+      if(!filterByBrand.length){
+        return {msg: "No products found", data: []};
+      }else{
+        filteredProducts = filterByBrand;
+      }
     }
 
 
@@ -223,6 +224,58 @@ productController.filterProducts = async(fields) =>{
     console.log(error);
   }
 }
+
+productController.getProduct = async(productId) =>{
+  try{
+    const findProduct = await Products.findOne({
+      where:{
+        id: productId
+      }
+    });
+
+    if(!findProduct){
+      return {msg:"Product not found"};
+    }
+
+    return {msg:"Product found", data: findProduct.dataValues};
+
+  }catch(error){
+    console.log(error);
+  }
+};
+
+
+productController.searchProducts = async(string) =>{
+  try{
+    const findProducts = await Products.findAll();
+
+    if(!findProducts.length){
+      return {msg: "Products not found", data: []};
+    };
+
+    let foundProducts = [];
+
+    findProducts.map(el => {
+      if(el.name.trim().toLowerCase().includes(string.toLowerCase())){
+        foundProducts.push(el);
+      }
+    });
+
+    findProducts.map(el => {
+      el.categories.map(category => {
+        if(category.toLowerCase().includes(string.toLowerCase())){
+          foundProducts.push(el);
+        }
+      })
+    });
+
+    
+    return {msg:"Products found", data: foundProducts};
+
+  }catch(error){
+    console.log(error);
+  }
+};
 
 
 module.exports = productController;

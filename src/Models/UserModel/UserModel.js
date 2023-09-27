@@ -75,11 +75,16 @@ const Users = sequelize.define(
     },
     genre: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     birthday: {
       type: DataTypes.DATE,
-      allowNull: false 
+      allowNull: true
+    },
+    contactPreferences: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      defaultValue: []
     },
     disabled: {
       type: DataTypes.BOOLEAN,
