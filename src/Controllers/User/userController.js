@@ -676,7 +676,7 @@ userController.cartToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let cart = typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : !findUser.dataValues.cart ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart;
+  let cart = !findUser.dataValues.cart ? [] : findUser.dataValues.cart ? typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart : findUser.dataValues.cart
 
   console.log("CART", cart, findUser.dataValues.id);
 
