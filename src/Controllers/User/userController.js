@@ -902,22 +902,22 @@ userController.sendActivationCode = async(data) =>{
       <body>
         <div class="body">
           <div class="header">
-            <h2>Rivélle Company</h2>
+            <h2>Made In Heaven</h2>
             <div class="header-bottom">
-              <a href="https://rivelle.netlify.app/home">Home</a>
-              <a href="https://rivelle.netlify.app/ourStore">Store</a>
-              <a href="https://rivelle.netlify.app/collections/gucci">Gucci</a>
+              <a href="https://madeinheaven-mgf.netlify.app/home">Home</a>
+              <a href="https://madeinheaven-mgf.netlify.app/ourStore">Store</a>
+              <a href="https://madeinheaven-mgf.netlify.app/collections/gucci">Gucci</a>
               <a href="https://rivelle.netlify.app/collections/louisvuitton">LV</a>
-              <a href="https://rivelle.netlify.app/collections/jimmyChoo" class="noBorder">Jimmy Choo</a>
+              <a href="https://madeinheaven-mgf.netlify.app/collections/jimmyChoo" class="noBorder">Jimmy Choo</a>
             </div>
           </div>
           <div class="message">
               <p>Dear ${firstName},</p>
-              <p>Welcome to Rivelle. Your Rivelle account enables you to:</p>
+              <p>Welcome to Made in Heaven. Your MIH account enables you to:</p>
               <ul>
                 <li>Follow your online orders and access your purchase history and e-receipts</li>
                 <li>Manage your personal information</li>
-                <li>Receive the latest Rivelle digital communication</li>
+                <li>Receive the latest Made in Heaven digital communication</li>
                 <li>Create your personal wishlist</li>
               </ul>
         
@@ -927,24 +927,24 @@ userController.sendActivationCode = async(data) =>{
         
               <p>Email: <a href="mailto:${email}">${email}</a></p>
         
-              <p>Experience the complete Louis Vuitton universe at <a href="https://rivelle.netlify.app">rivelle.netlify.app</a></p>
+              <p>Experience the complete Made in Heaven universe at <a href="https://madeinheaven.netlify.app">madeinheaven.netlify.app</a></p>
           </div>
           <div class="bottom">
             <div class="bottomDiv">
               <div class="bottomItem1">
-                <a href="mailto:rivellecompany@gmail.com"><img src="cid:email" alt="abc" width="25"></a>
+                <a href="mailto:madeinheaven@gmail.com"><img src="cid:email" alt="abc" width="25"></a>
                 <p>Email Us</p>
               </div>
               <div class="bottomItem2">
                 <a href="tel:+1786300300"><img src="cid:phone" alt="abc" width="25"></a>
-                <p>+1.786.RIVELLE</p>
+                <p>+1.786.MIH</p>
               </div>
             </div>
             <div class="bottomDiv2">
-              <p class="p1">Copyright © 2023 Rivelle Company</p>
+              <p class="p1">Copyright © 2023 Made in Heaven</p>
               <p class="p2">
                 You have the right to access, modify and cancel your personal information.
-                To do so, please send an e-mail to <a href="mailto:rivellecompany@gmail.com">rivellecompany@gmail.com</a>
+                To do so, please send an e-mail to <a href="mailto:madeinheaven@gmail.com">madeinheaven@gmail.com</a>
               </p>
             </div>
           </div>
