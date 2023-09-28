@@ -689,15 +689,16 @@ userController.cartToggle = async(item, userId) =>{
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
-    cart.push(item);
+    let cart2 = cart;
+    cart2.push(item);
     await findUser.update({
-      cart
+      cart: cart2
     });
     await findUser.save();
     return {msg: "Item added to cart", data: findUser.dataValues, product: item.id};
 
   }else if(cart.length){
-    console.log(cart);
+    
     // Si hay items en favoritos, valida si el item ya existe
     const findItem = cart.find(el => el.id === item.id);
 
