@@ -96,7 +96,7 @@ userController.loginUser = async(user) =>{
       if(match) {
         // Logged succesfully
         const encodedUserId = generateToken(userFound.dataValues.id);
-        return {msg: "User logged", data: {...userFound.dataValues, encodedId: encodedUserId}}
+        return {msg: "User logged", data: {...userFound.dataValues, encodedId: encodedUserId, cart: userFound.dataValues.cart ? userFound.dataValues.cart : []}}
       }else{
         // Wrong Password
         return {msg: "Password Incorrect"};
