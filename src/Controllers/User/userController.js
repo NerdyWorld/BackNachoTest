@@ -686,6 +686,7 @@ userController.cartToggle = async(item, userId) =>{
     cart = findUser.dataValues.cart;
   };
   
+  console.log(cart);
 
   if(!cart.length){
     // Si no hay nada en favoritos, agrega directo
