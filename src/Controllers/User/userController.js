@@ -676,8 +676,15 @@ userController.cartToggle = async(item, userId) =>{
       return {msg: "User not found"}
     }
 
-  let cart = !findUser.dataValues.cart ? [] : findUser.dataValues.cart ? typeof findUser.dataValues.cart === "string" ? findUser.dataValues.cart === "[]" ? [] : (typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]") ? JSON.parse(findUser.dataValues.cart) : findUser.dataValues.cart : findUser.dataValues.cart : findUser.dataValues.cart
+  let cart;
 
+  if(!findUser.dataValues.cart || findUser.dataValues.cart === "[]"){
+    cart = [];
+  }else if(typeof findUser.dataValues.cart === "string" && findUser.dataValues.cart !== "[]"){
+    cart = JSON.parse(findUser.dataValues.cart);
+  }else{
+    cart = findUser.dataValues.cart;
+  };
   
 
   if(!cart.length){
@@ -690,6 +697,7 @@ userController.cartToggle = async(item, userId) =>{
     return {msg: "Item added to cart", data: findUser.dataValues, product: item.id};
 
   }else if(cart.length){
+  
     // Si hay items en favoritos, valida si el item ya existe
     const findItem = cart.find(el => el.id === item.id);
 
