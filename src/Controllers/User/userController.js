@@ -49,7 +49,7 @@ userController.createUser = async(user) =>{
 
     const createUser = await Users.create({...user, password: hashedPassword});
     const encodedUserId = generateToken(createUser.dataValues.id);
-    return {msg: "User created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: [], favorites: []}};
+    return {msg: "User created", data: {...createUser.dataValues, encodedId: encodedUserId}};
 
   }catch(error){
     console.log(error);
@@ -84,6 +84,7 @@ userController.loginUser = async(user) =>{
 
     if(findUserByEmail || findUserByUsername){
       const userFound = findUserByEmail ? findUserByEmail : findUserByUsername;
+      
       if(userFound.dataValues.googleUser){
         return {msg: "This email is associated with a Google account, please try logging in with Google"}
       };
@@ -96,7 +97,8 @@ userController.loginUser = async(user) =>{
       if(match) {
         // Logged succesfully
         const encodedUserId = generateToken(userFound.dataValues.id);
-        return {msg: "User logged", data: {...userFound.dataValues, encodedId: encodedUserId, cart: userFound.dataValues.cart ? userFound.dataValues.cart : []}}
+        
+        return {msg: "User logged", data: {...userFound.dataValues, encodedId: encodedUserId}}
       }else{
         // Wrong Password
         return {msg: "Password Incorrect"};
@@ -139,7 +141,7 @@ userController.googleAuth = async(user) =>{
       await userExist.save();
       console.log(userExist);
 
-      return {msg: "Google user logged", data: {...userExist.dataValues, encodedId: encodedUserId, cart: !userExist.dataValues.cart ? [] : userExist.dataValues.cart}}
+      return {msg: "Google user logged", data: {...userExist.dataValues, encodedId: encodedUserId}}
     }
 
     // REGISTER USER
@@ -161,7 +163,7 @@ userController.googleAuth = async(user) =>{
       const encodedUserId = generateToken(createUser.dataValues.id);
       console.log(createUser.dataValues);
 
-      return {msg: "Google user created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: createUser.dataValues.cart ? createUser.dataValues.cart : []}};
+      return {msg: "Google user created", data: {...createUser.dataValues, encodedId: encodedUserIds}};
     }
 
   }catch(error){
@@ -219,7 +221,7 @@ userController.githubAuth = async(gitCode) =>{
       await userRegistered.save();
 
 
-      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart ? userRegistered.dataValues.cart : []}}
+      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId}}
     };
 
     // Not registered, so we register the user.
@@ -240,7 +242,7 @@ userController.githubAuth = async(gitCode) =>{
 
     const encodedUserId = generateToken(createUser.dataValues.id);
     
-    return {msg: "Github user created", data: {...createUser.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart ? userRegistered.dataValues.cart : []}}
+    return {msg: "Github user created", data: {...createUser.dataValues, encodedId: encodedUserId}}
     
 
   }catch(error){
@@ -372,7 +374,7 @@ userController.getUser = async(userId) =>{
       return {msg: "User not found"}
     }
 
-    return {msg: "User found", data: {...getUser.dataValues, cart: getUser.cart ? getUser.cart : []}};
+    return {msg: "User found", data: getUser.dataValues};
 
   }catch(error){
     console.log(error);
@@ -400,6 +402,9 @@ userController.forgotPassword = async(userEmail) =>{
 
     if(!findUser){
       return {msg: "User not found"}
+    };
+    if(findUser.dataValues.githubUser || findUser.dataValues.googleUser){
+      return {msg: "Not available"};
     }
 
     const getToken = generateToken(findUser.id);
