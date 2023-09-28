@@ -697,7 +697,7 @@ userController.cartToggle = async(item, userId) =>{
     return {msg: "Item added to cart", data: findUser.dataValues, product: item.id};
 
   }else if(cart.length){
-  
+    console.log(cart);
     // Si hay items en favoritos, valida si el item ya existe
     const findItem = cart.find(el => el.id === item.id);
 
