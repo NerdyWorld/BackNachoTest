@@ -220,8 +220,8 @@ userController.githubAuth = async(gitCode) =>{
 
       await userRegistered.save();
 
-
-      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId}}
+      
+      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart === "[]" ? [] : userRegistered.dataValues.cart}}
     };
 
     // Not registered, so we register the user.
@@ -1052,7 +1052,6 @@ userController.contactPreference = async(data) =>{
     console.log(error);
   }
 };
-
 
 userController.emptyCart = async(userId) =>{
   try{
