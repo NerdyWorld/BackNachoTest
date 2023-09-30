@@ -1042,7 +1042,7 @@ userController.contactPreference = async(data) =>{
     if(typeof findUser.dataValues.favorites === "string"){
       findUser.dataValues.favorites = JSON.parse(findUser.dataValues.favorites);
     }
-    return {msg: "Preferences updated", data: {...findUser.dataValues, cart: findUser.dataValues.cart ? findUser.dataValues.cart : []}};
+    return {msg: "Preferences updated", data: findUser.dataValues};
 
    
   }catch(error){
