@@ -221,7 +221,7 @@ userController.githubAuth = async(gitCode) =>{
       await userRegistered.save();
 
       
-      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId, cart: userRegistered.dataValues.cart === "[]" ? [] : userRegistered.dataValues.cart}}
+      return {msg: "Github user logged", data: {...userRegistered.dataValues, encodedId: encodedUserId}}
     };
 
     // Not registered, so we register the user.
@@ -1067,7 +1067,7 @@ userController.emptyCart = async(userId) =>{
     };
 
     await findUser.update({
-      cart: "[]"
+      cart: ""
     });
 
     await findUser.save();
