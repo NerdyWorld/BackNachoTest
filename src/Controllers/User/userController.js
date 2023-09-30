@@ -1067,7 +1067,7 @@ userController.emptyCart = async(userId) =>{
     };
 
     await findUser.update({
-      cart: ""
+      cart: []
     });
 
     await findUser.save();
